@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="si">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CINE FACTS LK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Noto+Sans+Sinhala:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+  :root{
+    --bg: #0a0a0a;
+    --surface: #161513;
+    --surface-hi: #201e1a;
+    --red: #d4a418;
+    --gold: #f2b705;
+    --gold-deep: #c98f02;
+    --text: #f2efe9;
+    --muted: #948d7d;
+    --sprocket: #2b2820;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans Sinhala','Inter',sans-serif;
+    min-height:100vh;
+  }
+  ::selection{ background:var(--red); color:#fff; }
+
+  /* film strip texture bar */
+  .filmstrip{
+    height:14px;
+    width:100%;
+    background:
+      repeating-linear-gradient(90deg, var(--sprocket) 0 10px, transparent 10px 22px);
+    background-color:#000;
+    opacity:.9;
+  }
+
+  header{
+    background:linear-gradient(180deg, #100e13 0%, #0b0a0d 100%);
+    border-bottom:1px solid #221f27;
+    position:sticky;
+    top:0;
+    z-index:50;
+  }
+  .header-inner{
+    max-width:1200px;
+    margin:0 auto;
+    padding:16px 20px;
+    display:flex;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+    flex-shrink:0;
+  }
+  .logo-img{
+    height:50px;
+    width:50px;
+    border-radius:50%;
+    object-fit:cover;
+  }
+  .search-wrap{
+    flex:1;
+    min-width:200px;
+    position:relative;
+  }
+  #searchInput{
+    width:100%;
+    background:var(--surface);
+    border:1px solid #2c2932;
+    color:var(--text);
+    padding:11px 16px 11px 40px;
+    border-radius:8px;
+    font-size:15px;
+    font-family:inherit;
+    outline:none;
+    transition:border-color .15s;
+  }
+  #searchInput:focus{ border-color:var(--red); }
+  #searchInput::placeholder{ color:var(--muted); }
+  .search-icon{
+    position:absolute;
+    left:13px;
+    top:50%;
+    transform:translateY(-50%);
+    width:16px;
+    height:16px;
+    opacity:.6;
+    pointer-events:none;
+  }
+  .yt-link{
+    background:var(--red);
+    color:#fff;
+    text-decoration:none;
+    padding:10px 18px;
+    border-radius:8px;
+    font-weight:600;
+    font-size:14px;
+    white-space:nowrap;
+    transition:filter .15s;
+  }
+  .yt-link:hover{ filter:brightness(1.12); }
+
+  /* hero banner */
+  .hero{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/7;
+    max-height:520px;
+    overflow:hidden;
+    background:#000;
+  }
+  .hero-slide{
+    position:absolute; inset:0;
+    opacity:0;
+    transition:opacity .7s ease;
+    pointer-events:none;
+  }
+  .hero-slide.active{ opacity:1; pointer-events:auto; }
+  .hero-dots{
+    position:absolute;
+    z-index:3;
+    bottom:16px;
+    right:20px;
+    display:flex;
+    gap:8px;
+  }
+  .hero-dot{
+    width:8px; height:8px;
+    border-radius:50%;
+    background:rgba(255,255,255,.35);
+    cursor:pointer;
+    transition:background .2s, width .2s;
+    border:none;
+    padding:0;
+  }
+  .hero-dot.active{ background:var(--gold); width:22px; border-radius:5px; }
+  .hero img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+    filter:brightness(.85);
+  }
+  .hero::after{
+    content:'';
+    position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(10,10,10,0) 40%, var(--bg) 100%),
+      linear-gradient(90deg, rgba(10,10,10,.95) 0%, rgba(10,10,10,.15) 55%, rgba(10,10,10,.05) 100%);
+  }
+  .hero-content{
+    position:absolute;
+    left:0; bottom:0;
+    padding:0 20px 34px;
+    max-width:640px;
+    z-index:2;
+  }
+  .hero-eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:var(--gold);
+    font-family:'Bebas Neue',sans-serif;
+    letter-spacing:2px;
+    font-size:14px;
+    margin-bottom:10px;
+    text-shadow:0 0 14px rgba(242,183,5,.5);
+  }
+  .hero-title{
+    font-size:34px;
+    font-weight:700;
+    line-height:1.15;
+    margin:0 0 14px;
+    text-shadow:0 3px 18px rgba(0,0,0,.6);
+  }
+  .hero-actions{ display:flex; gap:12px; flex-wrap:wrap; }
+  .hero-play{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--gold);
+    color:#161513;
+    border:none;
+    padding:12px 24px;
+    border-radius:8px;
+    font-weight:700;
+    font-size:14.5px;
+    font-family:inherit;
+    cursor:pointer;
+    box-shadow:0 4px 20px rgba(242,183,5,.28);
+    transition:transform .15s, box-shadow .15s;
+  }
+  .hero-play:hover{ transform:translateY(-2px); box-shadow:0 6px 26px rgba(242,183,5,.4); }
+  .hero-play svg{ width:18px; height:18px; }
+  .hero-more{
+    display:inline-flex;
+    align-items:center;
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(6px);
+    color:var(--text);
+    border:1px solid rgba(255,255,255,.18);
+    padding:12px 22px;
+    border-radius:8px;
+    font-weight:600;
+    font-size:14.5px;
+    text-decoration:none;
+    transition:background .15s;
+  }
+  .hero-more:hover{ background:rgba(255,255,255,.15); }
+
+  main{ max-width:1200px; margin:0 auto; padding:34px 20px 60px; }
+
+  .page-title{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:21px;
+    font-weight:700;
+    margin:4px 0 24px;
+    color:var(--text);
+  }
+  .page-title::before{
+    content:'';
+    width:5px;
+    height:22px;
+    background:var(--gold);
+    border-radius:3px;
+    box-shadow:0 0 10px rgba(242,183,5,.6);
+  }
+  .page-title span{ color:var(--muted); font-weight:500; font-size:15px; }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(150px,1fr));
+    gap:18px;
+  }
+
+  .card{
+    background:var(--surface);
+    border-radius:10px;
+    overflow:hidden;
+    cursor:pointer;
+    position:relative;
+    border:1px solid #201d24;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:rgba(242,183,5,.25);
+    transition:transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s, border-color .25s;
+  }
+  .card:hover{
+    transform:translateY(-6px) scale(1.015);
+    border-color:var(--gold);
+    box-shadow:0 14px 34px rgba(0,0,0,.5), 0 0 0 1px rgba(242,183,5,.15);
+  }
+  .thumb-wrap{
+    position:relative;
+    aspect-ratio:2/3;
+    background:#000;
+    overflow:hidden;
+  }
+  .thumb-wrap img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .badge-ep{
+    position:absolute;
+    top:8px;
+    left:8px;
+    background:var(--gold);
+    color:#1a1710;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:13px;
+    letter-spacing:.5px;
+    padding:3px 9px;
+    border-radius:5px;
+    box-shadow:0 2px 10px rgba(0,0,0,.4);
+  }
+  .play-overlay{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0);
+    opacity:0;
+    transition:opacity .2s, background .2s;
+  }
+  .card:hover .play-overlay{
+    opacity:1;
+    background:rgba(8,7,5,.45);
+  }
+  .play-overlay .play-circle{
+    width:48px; height:48px;
+    border-radius:50%;
+    background:var(--gold);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 24px rgba(242,183,5,.65);
+    transform:scale(.85);
+    transition:transform .2s;
+  }
+  .card:hover .play-circle{ transform:scale(1); }
+  .play-overlay svg{ width:20px; height:20px; margin-left:2px; }
+
+  .card-info{ padding:10px 11px 13px; }
+  .card-title{
+    font-size:13.5px;
+    font-weight:600;
+    line-height:1.35;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    min-height:2.6em;
+  }
+  .card-meta{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    margin-top:7px;
+    color:var(--gold);
+    font-size:12px;
+    font-weight:600;
+  }
+  .card-meta svg{ width:12px; height:12px; }
+
+  .empty-state{
+    text-align:center;
+    padding:70px 20px;
+    color:var(--muted);
+  }
+  .empty-state .big{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:28px;
+    color:var(--text);
+    margin-bottom:8px;
+    letter-spacing:1px;
+  }
+
+  /* modal player */
+  .modal-backdrop{
+    position:fixed; inset:0;
+    background:rgba(4,3,5,.88);
+    display:none;
+    align-items:flex-start;
+    justify-content:center;
+    z-index:200;
+    padding:20px;
+    overflow-y:auto;
+  }
+  .modal-backdrop.open{ display:flex; }
+  .modal-box{
+    width:100%;
+    max-width:900px;
+  }
+  .modal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .modal-title{
+    font-size:15px;
+    font-weight:600;
+    color:var(--text);
+    padding-right:10px;
+  }
+  .close-btn{
+    background:var(--surface-hi);
+    border:1px solid #2c2932;
+    color:var(--text);
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:18px;
+    line-height:1;
+    flex-shrink:0;
+  }
+  .close-btn:hover{ background:var(--red); border-color:var(--red); }
+  .player-wrap{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/9;
+    background:#000;
+    border-radius:10px;
+    overflow:hidden;
+    border:1px solid var(--sprocket);
+  }
+  .player-wrap iframe{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    border:0;
+  }
+
+  .video-container{
+    position:relative;
+    width:100%;
+    background:#000;
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .video-container video{
+    width:100%;
+    height:auto;
+    display:block;
+  }
+  .video-container::-webkit-media-controls-panel{
+    background-color:#000 !important;
+  }
+  /* Custom play button overlay */
+  .video-container::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.3);
+    opacity:0;
+    transition:opacity 0.3s;
+    pointer-events:none;
+  }
+  .video-container:hover::before{
+    opacity:1;
+  }
+
+  footer{
+    text-align:center;
+    padding:24px 20px 34px;
+    color:var(--muted);
+    font-size:12.5px;
+    border-top:1px solid #201d24;
+  }
+
+  /* series detail page (inside modal) */
+  .series-detail{
+    display:flex;
+    gap:18px;
+    padding-bottom:20px;
+    margin-bottom:16px;
+    border-bottom:1px solid #201d24;
+  }
+  .series-poster{
+    width:120px;
+    flex-shrink:0;
+    aspect-ratio:2/3;
+    object-fit:cover;
+    border-radius:8px;
+    background:#000;
+    border:1px solid #2c2932;
+  }
+  .series-info{ display:flex; flex-direction:column; justify-content:center; min-width:0; }
+  .series-info h2{
+    font-size:20px;
+    margin:0 0 8px;
+    color:var(--text);
+    line-height:1.25;
+  }
+  .series-meta-line{
+    color:var(--gold);
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:14px;
+  }
+  .series-watch-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--gold);
+    color:#161513;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    font-weight:700;
+    font-size:13.5px;
+    font-family:inherit;
+    cursor:pointer;
+    width:fit-content;
+  }
+  .series-watch-btn svg{ width:15px; height:15px; }
+
+  .episode-list{ display:flex; flex-direction:column; gap:2px; }
+  .ep-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 6px;
+    border-radius:8px;
+    cursor:pointer;
+    border-bottom:1px solid #201d24;
+    transition:background .15s;
+  }
+  .ep-row:hover{ background:var(--surface-hi); }
+  .ep-num{
+    width:22px;
+    flex-shrink:0;
+    text-align:center;
+    color:var(--muted);
+    font-weight:700;
+    font-size:14px;
+  }
+  .ep-thumb{
+    width:64px;
+    aspect-ratio:16/9;
+    flex-shrink:0;
+    border-radius:6px;
+    overflow:hidden;
+    background:#000;
+  }
+  .ep-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .ep-row-info{ min-width:0; flex:1; }
+  .ep-row-title{
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--text);
+    line-height:1.3;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .ep-row-tag{ font-size:11.5px; color:var(--gold); margin-top:3px; font-weight:600; }
+  .ep-row-play{ flex-shrink:0; color:var(--gold); opacity:.7; }
+  .ep-row-play svg{ width:18px; height:18px; }
+
+  @media (max-width:520px){
+    .grid{ grid-template-columns:repeat(auto-fill, minmax(120px,1fr)); gap:12px; }
+    .card-title{ font-size:12.5px; }
+    .hero{ aspect-ratio:4/3; max-height:340px; }
+    .hero-title{ font-size:24px; }
+    .hero-content{ padding:0 16px 26px; }
+    .hero-play, .hero-more{ padding:10px 16px; font-size:13px; }
+  }
+</style>
+ </head>
+ <body>
+  <div class="filmstrip"></div>
+  <header>
+   <div class="header-inner">
+    <a href="#" class="logo"><img src="logo.png" alt="CINE FACTS LK" class="logo-img"></a>
+    <div class="search-wrap">
+     <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="#8d8a91" stroke-width="2">
+      <circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+     </svg>
+     <input type="text" id="searchInput" placeholder="වීඩියෝ සොයන්න...">
+    </div>
+    <a class="yt-link" id="channelLink" href="https://youtube.com/@cinefactslk1?si=iZy2wWPZ8pODQmQi" target="_blank" rel="noopener">Channel එකට යන්න</a>
+   </div>
+  </header>
+  <section class="hero" id="heroSection">
+   <div class="hero-dots" id="heroDots"></div>
+  </section>
+  <main>
+   <p class="page-title">All Episodes <span>— CINE FACTS LK</span></p>
+   <div class="grid" id="videoGrid"></div>
+   <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="big">මොකුත් හම්බුනේ නෑ</div>
+    <div>වෙන search එකක් try කරන්න.</div>
+   </div>
+  </main>
+  <footer>
+   CINE FACTS LK — © 2026. All videos belong to the CINE FACTS LK YouTube channel.
+   <br>
+   <span style="color:var(--gold); font-weight:600;">Engineered by Gihan Sandanu</span>
+  </footer>
+  <div class="modal-backdrop" id="modalBackdrop">
+   <div class="modal-box">
+    <div class="modal-head">
+     <div class="modal-title" id="modalTitle"></div>
+     <button class="close-btn" id="closeBtn">✕</button>
+    </div>
+    <div class="player-wrap" id="playerWrap">
+     <iframe id="playerFrame" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+   </div>
+  </div>
+  <div class="modal-backdrop" id="seriesModalBackdrop">
+   <div class="modal-box" style="max-width:1100px;">
+    <div class="modal-head">
+     <div class="modal-title" id="seriesModalTitle"></div>
+     <button class="close-btn" id="seriesCloseBtn">✕</button>
+    </div>
+    <div id="seriesEpisodeGrid"></div>
+   </div>
+  </div>
+  <script>
+/* ============================================================
+   ඔයාගේ videos මෙතන add කරන්න.
+   id       -> YouTube video ID එක (link එකේ v= පස්සේ තියෙන කොටස
+               e.g. https://www.youtube.com/watch?v=XXXXXXXXXXX
+               එතකොට id = "XXXXXXXXXXX")
+   title    -> Video එකේ නම
+   ep       -> (optional) Episode / number label, නැත්නම් "" දාන්න
+   series   -> Film/Series එකේ නම. එකම series නමක් තියෙන videos
+               ඔක්කොම web එකේ එකම "film" card එකක් යටතේ (episode list
+               එකක් විදිහට) එකට පෙන්නනවා.
+               අලුත් video එකක් same series එකට add කරන්නම්
+               අලුත් object එකක් මෙතනට එකතු කරලා series නම same විදිහට
+               දාන්න. වෙන film/series එකක් නම් series නම වෙනස් කරන්න.
+   ============================================================ */
+const videos = [
+  { id: "83Cl2pu54hE", title: "මායාවරන්ගේ ලෝකය - කථාව 01", ep: "EP 01", thumb: "banner1.png", series: "මායාවරන්ගේ ලෝකය" },
+  { id: "hJa82nhRoJ0", title: "මායාවරන්ගේ ලෝකය - කථාව 02", ep: "EP 02", thumb: "thumb2.jpg", series: "මායාවරන්ගේ ලෝකය" },
+  { id: "6EQTvqZH7s8", title: "මායාවරන්ගේ ලෝකය - කථාව 03", ep: "EP 03", thumb: "thumb3.jpg", series: "මායාවරන්ගේ ලෝකය" },
+  { id: "dkLXPu4-vvY", title: "මායාවරන්ගේ ලෝකය - කථාව 04", ep: "EP 04", thumb: "thumb4.jpg", series: "මායාවරන්ගේ ලෝකය" },
+  { id: "7A_mNzgivB4", title: "මායාවරන්ගේ ලෝකය - කථාව 05", ep: "EP 05", thumb: "thumb5.jpg", series: "මායාවරන්ගේ ලෝකය" },
+  { id: "1Xd2KuN9QQ__fDmnUbmbLm3PfnBN29PAA", title: "Mercy for None (2025) - කථාව 01", ep: "EP 01", thumb: "mercy-thumb1.jpg", series: "Mercy for None (2025)" },
+  { id: "coming-soon", title: "Harry Potter and the Philosopher's Stone (2001)", ep: "", thumb: "hp-poster.jpg", series: "Harry Potter" },
+  { id: "coming-soon", title: "Money Heist: Korea – Joint Economic Area", ep: "SEASON 01", thumb: "mh-poster.jpg", series: "Money Heist: Korea" },
+];
+/* ============================================================ */
+
+const grid = document.getElementById('videoGrid');
+const emptyState = document.getElementById('emptyState');
+const searchInput = document.getElementById('searchInput');
+const modalBackdrop = document.getElementById('modalBackdrop');
+const playerFrame = document.getElementById('playerFrame');
+const modalTitle = document.getElementById('modalTitle');
+const closeBtn = document.getElementById('closeBtn');
+const heroSection = document.getElementById('heroSection');
+const heroDots = document.getElementById('heroDots');
+const seriesModalBackdrop = document.getElementById('seriesModalBackdrop');
+const seriesModalTitle = document.getElementById('seriesModalTitle');
+const seriesCloseBtn = document.getElementById('seriesCloseBtn');
+const seriesEpisodeGrid = document.getElementById('seriesEpisodeGrid');
+
+function groupBySeries(list){
+  const map = new Map();
+  list.forEach(v => {
+    const key = v.series || v.title;
+    if(!map.has(key)) map.set(key, []);
+    map.get(key).push(v);
+  });
+  return Array.from(map, ([series, episodes]) => ({ series, episodes }));
+}
+
+let heroTimer = null;
+let heroIndex = 0;
+let heroGroups = [];
+
+function heroSlideHtml(group){
+  const poster = group.episodes[0];
+  const src = poster.thumb ? poster.thumb : `https://img.youtube.com/vi/${poster.id}/maxresdefault.jpg`;
+  return `
+    <img src="${src}" alt="${group.series}">
+    <div class="hero-content">
+      <div class="hero-eyebrow">★ ★ ★ FEATURED SERIES</div>
+      <h1 class="hero-title">${group.series}</h1>
+      <div class="hero-actions">
+        <button class="hero-play">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          දැන් බලන්න
+        </button>
+        <a href="#videoGrid" class="hero-more">සියලු Episodes</a>
+      </div>
+    </div>
+  `;
+}
+
+function goToHeroSlide(i){
+  const slides = heroSection.querySelectorAll('.hero-slide');
+  const dots = heroDots.querySelectorAll('.hero-dot');
+  slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+  dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
+  heroIndex = i;
+}
+
+function startHeroAutoplay(){
+  if(heroTimer) clearInterval(heroTimer);
+  if(heroGroups.length < 2) return;
+  heroTimer = setInterval(() => {
+    goToHeroSlide((heroIndex + 1) % heroGroups.length);
+  }, 5500);
+}
+
+function buildHeroSlider(groups){
+  heroGroups = groups;
+  heroSection.querySelectorAll('.hero-slide').forEach(s => s.remove());
+  heroDots.innerHTML = '';
+
+  groups.forEach((group, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+    slide.innerHTML = heroSlideHtml(group);
+    slide.querySelector('.hero-play').addEventListener('click', () => openPlayer(group.episodes[0]));
+    slide.querySelector('.hero-more').addEventListener('click', (e) => {
+      e.preventDefault();
+      openSeries(group);
+    });
+    heroSection.insertBefore(slide, heroDots);
+
+    const dot = document.createElement('button');
+    dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => { goToHeroSlide(i); startHeroAutoplay(); });
+    heroDots.appendChild(dot);
+  });
+
+  startHeroAutoplay();
+}
+
+function playIcon(){
+  return `<svg viewBox="0 0 24 24" fill="#1a1710"><path d="M8 5v14l11-7z"/></svg>`;
+}
+
+function episodeCardHtml(v){
+  return `
+    <div class="thumb-wrap">
+      <img src="${v.thumb ? v.thumb : 'https://img.youtube.com/vi/' + v.id + '/hqdefault.jpg'}" alt="${v.title}" loading="lazy">
+      ${v.ep ? `<span class="badge-ep">${v.ep}</span>` : ''}
+      <div class="play-overlay"><div class="play-circle">${playIcon()}</div></div>
+    </div>
+    <div class="card-info">
+      <div class="card-title">${v.title}</div>
+      <div class="card-meta">
+        <svg viewBox="0 0 24 24" fill="#f2b705"><path d="M8 5v14l11-7z"/></svg>
+        CINE FACTS LK
+      </div>
+    </div>
+  `;
+}
+
+// Main grid: one card per film/series. Search: flat episode matches.
+function render(list, searching){
+  grid.innerHTML = '';
+  if(list.length === 0){
+    emptyState.style.display = 'block';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  if(searching){
+    list.forEach(v => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = episodeCardHtml(v);
+      card.addEventListener('click', () => openPlayer(v));
+      grid.appendChild(card);
+    });
+    return;
+  }
+
+  groupBySeries(list).forEach(group => {
+    const poster = group.episodes[0];
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="thumb-wrap">
+        <img src="${poster.thumb ? poster.thumb : 'https://img.youtube.com/vi/' + poster.id + '/hqdefault.jpg'}" alt="${group.series}" loading="lazy">
+        <span class="badge-ep">${group.episodes.length} Episodes</span>
+        <div class="play-overlay"><div class="play-circle">${playIcon()}</div></div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">${group.series}</div>
+        <div class="card-meta">
+          <svg viewBox="0 0 24 24" fill="#f2b705"><path d="M8 5v14l11-7z"/></svg>
+          CINE FACTS LK
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', () => openSeries(group));
+    grid.appendChild(card);
+  });
+}
+
+function openSeries(group){
+  seriesModalTitle.textContent = '';
+  const poster = group.episodes[0];
+  const posterSrc = poster.thumb ? poster.thumb : `https://img.youtube.com/vi/${poster.id}/hqdefault.jpg`;
+
+  // Check if series is coming soon
+  if(poster.id === 'coming-soon'){
+    seriesEpisodeGrid.innerHTML = `
+      <div class="series-detail">
+        <img class="series-poster" src="${posterSrc}" alt="${group.series}">
+        <div class="series-info">
+          <h2>${group.series}</h2>
+          <div class="series-meta-line">CINE FACTS LK</div>
+          <button class="series-watch-btn" disabled style="background:#555; cursor:not-allowed; opacity:0.6;">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Coming Soon 🔜
+          </button>
+          <p style="color:#aaa; font-size:12px; margin-top:16px; line-height:1.5;">නවතම episodes ඉතින්ම එනවා. පහසුවෙන්ම බලා ගන්න!</p>
+        </div>
+      </div>
+    `;
+  } else {
+    const rowsHtml = group.episodes.map((v, i) => `
+      <div class="ep-row" data-idx="${i}">
+        <div class="ep-num">${i + 1}</div>
+        <div class="ep-thumb"><img src="${v.thumb ? v.thumb : 'https://img.youtube.com/vi/' + v.id + '/hqdefault.jpg'}" alt="${v.title}" loading="lazy"></div>
+        <div class="ep-row-info">
+          <div class="ep-row-title">${v.title}</div>
+          ${v.ep ? `<div class="ep-row-tag">${v.ep}</div>` : ''}
+        </div>
+        <div class="ep-row-play">${playIcon().replace('#1a1710', 'currentColor')}</div>
+      </div>
+    `).join('');
+
+    seriesEpisodeGrid.innerHTML = `
+      <div class="series-detail">
+        <img class="series-poster" src="${posterSrc}" alt="${group.series}">
+        <div class="series-info">
+          <h2>${group.series}</h2>
+          <div class="series-meta-line">CINE FACTS LK &nbsp;•&nbsp; ${group.episodes.length} Episodes</div>
+          <button class="series-watch-btn" id="seriesWatchBtn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Episode 1 බලන්න
+          </button>
+        </div>
+      </div>
+      <div class="episode-list">${rowsHtml}</div>
+    `;
+
+    document.getElementById('seriesWatchBtn').addEventListener('click', () => openPlayer(group.episodes[0]));
+    seriesEpisodeGrid.querySelectorAll('.ep-row').forEach(row => {
+      row.addEventListener('click', () => openPlayer(group.episodes[+row.dataset.idx]));
+    });
+  }
+
+  seriesModalBackdrop.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSeries(){
+  seriesModalBackdrop.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function openPlayer(v){
+  modalTitle.textContent = v.title;
+  const playerWrap = document.getElementById('playerWrap');
+  
+  let fileId = null;
+  
+  if(v.id.includes('drive.google.com')){
+    // Extract file ID from Google Drive URL
+    fileId = v.id.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+  } else if(v.id.match(/^[a-zA-Z0-9-_]{20,}$/)){
+    // Direct file ID
+    fileId = v.id;
+  } else {
+    // YouTube format
+    fileId = null;
+  }
+  
+  if(fileId){
+    // Google Drive video streaming with multiple methods
+    playerWrap.innerHTML = `
+      <video 
+        style="width:100%; height:100%; background:#000; display:block;"
+        controls 
+        autoplay
+        preload="metadata">
+        <source src="https://drive.google.com/uc?export=download&id=${fileId}&confirm=yes" type="video/mp4">
+        <source src="https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=YOUR_API_KEY" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    `;
+  } else {
+    // YouTube format
+    playerWrap.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border:none;"></iframe>`;
+  }
+  
+  modalBackdrop.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePlayer(){
+  modalBackdrop.classList.remove('open');
+  const playerWrap = document.getElementById('playerWrap');
+  playerWrap.innerHTML = '<iframe id="playerFrame" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+  document.body.style.overflow = '';
+}
+
+closeBtn.addEventListener('click', closePlayer);
+modalBackdrop.addEventListener('click', (e) => {
+  if(e.target === modalBackdrop) closePlayer();
+});
+seriesCloseBtn.addEventListener('click', closeSeries);
+seriesModalBackdrop.addEventListener('click', (e) => {
+  if(e.target === seriesModalBackdrop) closeSeries();
+});
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape'){ closePlayer(); closeSeries(); }
+});
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  if(!q){ render(videos, false); return; }
+  const filtered = videos.filter(v => v.title.toLowerCase().includes(q) || (v.series || '').toLowerCase().includes(q));
+  render(filtered, true);
+});
+
+render(videos, false);
+buildHeroSlider(groupBySeries(videos));
+</script>
+ </body>
+</html>
